@@ -25,7 +25,9 @@ class BuildLayoutsTests(unittest.TestCase):
 
     def make_pick(self, path: Path, transparent: bool = True) -> None:
         mode = "RGBA" if transparent else "RGB"
-        fill = (0, 0, 0, 0) if transparent else (20, 20, 20)
+        # Deliberately retain a checker/matte-like RGB value under Alpha 0.
+        # The compositor must sanitize this hidden color before delivery.
+        fill = (191, 191, 191, 0) if transparent else (20, 20, 20)
         image = Image.new(mode, (100, 120), fill)
         draw = ImageDraw.Draw(image)
         color = (40, 130, 220, 255) if transparent else (40, 130, 220)
@@ -63,9 +65,17 @@ class BuildLayoutsTests(unittest.TestCase):
             self.assertEqual(report["aspect_ratio"], "3:4")
             self.assertTrue(report["source_pixel_identity"])
             self.assertFalse(report["source_scaled_or_cropped"])
+            self.assertTrue(report["pick_hidden_rgb_cleared"])
             x, y, width, height = report["source_rectangle_xywh"]
             embedded = final.crop((x, y, x + width, y + height))
             np.testing.assert_array_equal(np.asarray(embedded), np.asarray(source))
+
+            input_pick = np.asarray(Image.open(pick_path).convert("RGBA"))
+            saved_pick = np.asarray(Image.open(output / "01" / "pick-transparent.png").convert("RGBA"))
+            transparent_pixels = saved_pick[:, :, 3] == 0
+            visible_pixels = input_pick[:, :, 3] > 0
+            self.assertTrue(np.all(saved_pick[transparent_pixels, :3] == 0))
+            np.testing.assert_array_equal(saved_pick[visible_pixels], input_pick[visible_pixels])
 
     def test_rejects_pick_without_transparency(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

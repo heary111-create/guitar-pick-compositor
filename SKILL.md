@@ -15,7 +15,7 @@ Create one finished layout per source image. Keep creative generation and determ
 2. Read [references/prompt-template.md](references/prompt-template.md) before generating picks.
 3. For every source image, issue a separate built-in `image_gen` call using only that source as its visual reference. Never combine multiple sources in one generation when independence is requested or implied.
 4. Generate exactly one complete plastic guitar pick on a genuinely transparent background. Do not generate the fabric background, final canvas, hands, cases, captions, frames, or other props.
-5. Save every accepted generated PNG in the workspace. Reject or regenerate any result whose alpha channel is missing, whose silhouette is incomplete, or whose background/checkerboard is baked into RGB pixels.
+5. Save every accepted generated PNG in the workspace. Reject or regenerate any result whose alpha channel is missing, whose silhouette is incomplete, or whose background/checkerboard is baked into visible RGB pixels. Before delivery, clear RGB values wherever Alpha is exactly 0 so faulty previewers cannot reveal hidden checkerboard or matte colors; do not alter any pixel whose Alpha is greater than 0.
 6. Run `scripts/build_layouts.py` with matching ordered `--sources` and `--picks` lists. By default it creates the bright stitch-free woven top half, centers a small pick with ample whitespace, preserves the source at native decoded pixels in the lower half, and emits validation JSON.
 7. Read [references/quality-checklist.md](references/quality-checklist.md), inspect each composite visually, and confirm the validation report before delivery.
 

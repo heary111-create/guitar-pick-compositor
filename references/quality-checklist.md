@@ -13,6 +13,7 @@ Check every item independently.
 
 - Background is bright warm off-white with subtle woven variation.
 - No stitches, patch edges, seams, fraying, checkerboards, white frames, strips, or rectangular halos are visible.
+- Fully transparent pixels have Alpha 0 and RGB `(0, 0, 0)`; every pixel with Alpha greater than 0 is preserved during hidden-RGB cleanup.
 - Pick edge is clean with a restrained contact shadow; transparent padding does not appear as a rectangle.
 
 ## Source integrity

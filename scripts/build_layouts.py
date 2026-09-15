@@ -29,7 +29,14 @@ def load_transparent_pick(path: Path) -> Image.Image:
         raise ValueError(f"Pick must have genuine transparent and opaque pixels: {path}; alpha={extrema}")
     if image.getchannel("A").getbbox() is None:
         raise ValueError(f"Pick is fully transparent: {path}")
-    return image
+    # Generators may leave checkerboard or matte RGB values under pixels whose
+    # alpha is zero. Those values are invisible in compliant viewers but can
+    # leak through in faulty importers. Clear them without touching any visible
+    # pixel or changing the alpha channel.
+    pixels = np.asarray(image, dtype=np.uint8).copy()
+    transparent = pixels[:, :, 3] == 0
+    pixels[transparent, :3] = 0
+    return Image.fromarray(pixels, "RGBA")
 
 
 def bright_fabric(width: int, height: int) -> Image.Image:
@@ -139,6 +146,7 @@ def build_one(
         "source_pixel_sha256": pixel_hash(source),
         "embedded_pixel_sha256": pixel_hash(embedded),
         "pick_alpha_extrema": list(pick.getchannel("A").getextrema()),
+        "pick_hidden_rgb_cleared": True,
         "pick_rendered_size_px": list(rendered.size),
         "pick_height_ratio_of_top": pick_height_ratio,
         "source_scaled_or_cropped": False,

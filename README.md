@@ -8,6 +8,7 @@ The image model creates only the transparent pick. A deterministic Python helper
 
 - Runs one image-generation call per source so subjects and styles do not bleed between items.
 - Requests one complete plastic guitar pick with a genuine transparent background.
+- Clears hidden checkerboard or matte RGB values wherever Alpha is 0 while preserving every visible pick pixel.
 - Creates a 3:4 canvas split equally between the pick presentation and original image.
 - Keeps the pick small, centered, and surrounded by generous whitespace.
 - Never resizes or crops the source rectangle unless the user explicitly overrides that rule.
@@ -49,6 +50,8 @@ python scripts/build_layouts.py `
 
 Each numbered output folder contains `composite-3x4.png`, `pick-transparent.png`, and `validation.json`. The output root also contains `validation-summary.json`.
 
+The saved transparent pick is normalized for compatibility with previewers and importers that incorrectly expose RGB values stored beneath fully transparent pixels. This normalization changes only pixels whose Alpha value is exactly 0.
+
 ## Repository map
 
 - `SKILL.md` — routing, invariants, and required workflow.
@@ -66,6 +69,7 @@ No user source images, generated picks, finished layouts, machine paths, or priv
 ## Limitations
 
 - A prompt requesting transparency does not guarantee alpha; the saved PNG must be inspected and invalid picks are rejected.
+- Checkerboards shown by image editors may be a transparency indicator rather than image content. The helper clears hidden RGB under Alpha 0, but it rejects rather than repairs checkerboards baked into visible pixels.
 - The helper accepts opaque rectangular source images. It deliberately rejects sources containing transparency because flattening them would violate exact pixel preservation.
 - Pixel identity refers to decoded RGB pixels embedded in the output PNG, not byte-for-byte identity with the original compressed file.
 - Image-generation quality still depends on the available model and the supplied visual reference.
