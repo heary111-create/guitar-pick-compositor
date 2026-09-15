@@ -15,7 +15,11 @@ The image model creates only the transparent pick. A deterministic Python helper
 
 ## Installation
 
-Copy this repository to your personal Codex skills directory as `guitar-pick-compositor`. The resulting path should contain `SKILL.md` at its root.
+Clone this repository into your personal Codex skills directory. The resulting path must contain `SKILL.md` at its root:
+
+```bash
+git clone https://github.com/heary111-create/guitar-pick-compositor.git ~/.codex/skills/guitar-pick-compositor
+```
 
 Invoke it explicitly with:
 
