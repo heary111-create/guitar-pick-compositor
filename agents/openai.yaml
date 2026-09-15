@@ -1,0 +1,7 @@
+interface:
+  display_name: "Guitar Pick Compositor"
+  short_description: "Generate picks and pixel-safe 3:4 layouts"
+  default_prompt: "Use $guitar-pick-compositor to create one independent guitar pick per image and assemble verified 3:4 layouts."
+
+policy:
+  allow_implicit_invocation: true
